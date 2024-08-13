@@ -1,17 +1,23 @@
 import { useState } from "react";
 
-const AddTask = () => {
+const AddTask = ({ taskList, setTaskList }) => {
   const [addModal, setAddModal] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
 
-  const handleAdd = () => {
-    setAddModal(false);
-  };
   const handleInput = (e) => {
     const { name, value } = e.target;
-    if(name ===projectName) setProjectName(value)
-    if(name === taskDescription) setTaskDescription(alue)
+
+    if (name === "projectName") setProjectName(value);
+    if (name === "taskDescription") setTaskDescription(value);
+  };
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+    setTaskList([...taskList, { projectName, taskDescription }]);
+    setAddModal(false);
+    setTaskDescription("");
+    setProjectName("");
   };
 
   return (
