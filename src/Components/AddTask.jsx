@@ -10,27 +10,37 @@ const AddTask = ({ taskList, setTaskList }) => {
     const { name, value } = e.target;
 
     if (name === "projectName") {
-      setProjectName(value)
-      setErrorMessage("")
+      setProjectName(value);
+      setErrorMessage("");
     }
 
-    if (name === "projectName" && value == ""){
-      setErrorMessage("Enter Project name to continue")}
+    if (name === "projectName" && value == "") {
+      setErrorMessage("Enter Project name to continue");
+    }
 
-    if (name === "taskDescription")setTaskDescription(value);
-  }
+    if (name === "taskDescription") setTaskDescription(value);
+  };
 
   const handleAdd = (e) => {
     e.preventDefault();
-    if(!projectName){
-      setErrorMessage("Enter Project name to continue")
-    }else{ 
-      setTaskList([...taskList, { projectName, taskDescription }]);
+    if (!projectName) {
+      setErrorMessage("Enter Project name to continue");
+    } else {
+      let timestamp = new Date();
+      let tempList = taskList;
+      tempList.push({
+        projectName,
+        taskDescription,
+        timestamp: timestamp,
+        duration:0
+      })
+      localStorage.setItem("taskList", JSON.stringify(tempList))
+      window.location .reload()
       setAddModal(false);
       setTaskDescription("");
       setProjectName("");
     }
-    }
+  };
 
   return (
     <>
@@ -73,8 +83,9 @@ const AddTask = ({ taskList, setTaskList }) => {
                     id="project-name"
                     required
                   />
-                  <p className="text-red-500 text-center mt-2 mb-5"
-                  >{errorMessage}</p>
+                  <p className="text-red-500 text-center mt-2 mb-5">
+                    {errorMessage}
+                  </p>
                 </div>
                 <div>
                   <label
