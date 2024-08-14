@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const Edit = ({ task, index, taskList, setTaskList }) => {
+const Edit = ({ task,taskList, setTaskList }) => {
   const [editModal, setEditModal] = useState(false);
 
   const [projectName, setProjectName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
+
+  useEffect(()=>{
+    setProjectName(task.projectName);
+    setTaskDescription(task.taskDescription);
+  },[])
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -19,8 +24,6 @@ const Edit = ({ task, index, taskList, setTaskList }) => {
     taskList.splice(taskIndex, 1);
     setTaskList([...taskList, { projectName, taskDescription }]);
     setEditModal(false);
-    setTaskDescription("");
-    setProjectName("");
   };
   return (
     <>
