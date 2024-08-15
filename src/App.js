@@ -1,18 +1,48 @@
 import AddTask from "./Components/AddTask";
 import { useEffect, useState } from "react";
 import ToDo from "./Components/Todo";
+import { useDrop } from "react-dnd";
 
 function App() {
   const [taskList, setTaskList] = useState([]);
-  
+  const [Completed, setCompleted] = useState([]);
 
-  useEffect(()=>{
+  useEffect(() => {
     let array = localStorage.getItem("taskList");
 
-    if (array){
-      setTaskList(JSON.parse(array))
+    if (array) {
+      setTaskList(JSON.parse(array));
     }
-  },[])
+  }, []);
+
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: "todo",
+    drop: (item) =>
+      addToCompleted(
+        item.id,
+        item.projectName,
+        item.taskDescription,
+        item.timestamp,
+        item.duration
+      ),
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+
+  const addToCompleted = (
+    id,
+    projectName,
+    taskDescription,
+    timestamp,
+    duration
+  ) => {
+    const moveTask = taskList.filter((task) => id === task.id);
+    setCompleted((completed) => [
+      ...completed,
+      { moveTask, projectName, taskDescription, timestamp, duration },
+    ]);
+  };
 
   return (
     <>
@@ -23,15 +53,41 @@ function App() {
         <AddTask taskList={taskList} setTaskList={setTaskList} />
         <p className="text-xl my-2">to add task</p>
       </div>
-      <div>
-        <h2 className="ml-6 text-xl font-semibold w-3/4 max-w-lg my-4 py-1 px-2 bg-gray-300 ">
-          To Do:
-        </h2>
-        {taskList.map((task, i) => (
-          <>
-            <ToDo Key={i} task={task} index={i} taskList={taskList} setTaskList={setTaskList} />
-          </>
-        ))}
+      <div className="flex flex-row">
+        <div className="w-full ">
+          <h2 className="text-xl font-semibold w-3/4 max-w-lg my-4 py-2 px-4 bg-gray-200 ">
+            To Do:
+          </h2>
+          <div className="ml-6 flex flex-col-reverse">
+            {taskList.map((task, i) => (
+              <>
+                <ToDo
+                  Key={i}
+                  task={task}
+                  index={i}
+                  taskList={taskList}
+                  setTaskList={setTaskList}
+                />
+              </>
+            ))}
+          </div>
+        </div>
+        <div className="w-full flex flex-col" ref={drop}>
+          <h2 className="text-xl font-semibold w-3/4 max-w-lg my-4 py-2 px-4 bg-gray-200">
+            Completed:
+          </h2>
+          {Completed.map((task, i) => (
+            <>
+              <ToDo
+                Key={i}
+                task={task}
+                index={i}
+                taskList={taskList}
+                setTaskList={setTaskList}
+              />
+            </>
+          ))}
+        </div>
       </div>
     </>
   );
